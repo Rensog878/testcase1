@@ -207,6 +207,7 @@ export const Header = memo(function Header(props) {
               row that used to carry a <select> at >=1025px is gone. */}
           <LanguageQuickSwitch appliedLang={appliedLang} t={t} onSelect={onSelectLanguage} />
 
+          {user ? (
           <div className="action-item" id="headerAccountBtn" data-account-open onClick={handleAccountClick} style={{ cursor: 'pointer' }}>
             <i
               className={user ? 'fa-solid fa-circle-check action-icon' : 'fa-regular fa-circle-user action-icon'}
@@ -219,7 +220,7 @@ export const Header = memo(function Header(props) {
                 : <span className="action-sub" id="headerAccountSub" data-i18n="advisory_label">{t('advisory_label')}</span>}
               <span className="action-title" id="headerAccountTitle">{user ? `${user.name ? user.name.split(' ')[0] : 'Farmer'} ▾` : 'Sign In / Register'}</span>
             </div>
-          </div>
+          </div>) : null}
 
           <div className="action-item cart-trigger-btn" id="cartTrigger" data-checkout-open onClick={handleBasketClick} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
             <div className="action-icon">

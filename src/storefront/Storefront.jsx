@@ -157,13 +157,8 @@ export default function Storefront() {
 
       checkout.addItem({ ...product, price: Number(price), originalPrice: Number(originalPrice), selectedPack }, customQty)
 
-      if (!live.current.user) {
-        showToast(`"${product.name}" added to cart!`, 'success')
-        openSignIn('Login or Sign Up is mandatory to access your basket and complete checkout.')
-      } else {
-        showToast(`"${product.name}" added to basket!`, 'success')
+      showToast(`"${product.name}" added to basket!`, 'success')
         checkout.openBasket()
-      }
     }
 
     const handleBasketClick = event => {

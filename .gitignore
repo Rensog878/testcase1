@@ -9,3 +9,6 @@ node_modules/
 server/uploads/
 server/data/
 tools/
+__pycache__/
+*.pyc
+stephan.txt

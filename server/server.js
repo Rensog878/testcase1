@@ -1613,12 +1613,12 @@ function getRazorpayInstance() {
 // The server prices the cart and remembers exactly what is being paid for, so
 // the order recorded after payment cannot differ from what was charged.
 // Checkout requires a signed-in customer; the order is linked to the token's user.
-app.post('/api/payments/create-order', requireAuth(), async (req, res) => {
+app.post('/api/payments/create-order', async (req, res) => {
   try {
     const wait = await rateLimit(`checkout-ip:${clientIp(req)}`, 30, HOUR_MS);
     if (wait) return tooManyRequests(res, wait, 'Too many checkout attempts. Please try again later.');
 
-    const user = req.user;
+    const user = await getAuthenticatedUser(req);
     const customer = readCustomerDetails(req.body?.customer);
     const priced = await priceCart(req.body?.items);
     const quote = await quoteRewards(user, priced, req.body?.usePoints === true);
@@ -1862,12 +1862,12 @@ app.get('/api/orders', requireAuth(), requireModule('orders'), async (req, res) 
 
 // Cash on delivery. Only signed-in customers may order; the order is linked to
 // the account from the token, never from the request body.
-app.post('/api/orders', requireAuth(), async (req, res) => {
+app.post('/api/orders', async (req, res) => {
   try {
     const wait = await rateLimit(`order-ip:${clientIp(req)}`, 20, HOUR_MS);
     if (wait) return tooManyRequests(res, wait, 'Too many orders from this connection. Please try again later.');
 
-    const user = req.user;
+    const user = await getAuthenticatedUser(req);
     const customer = readCustomerDetails(req.body);
     const priced = await priceCart(req.body?.items);
     const quote = await quoteRewards(user, priced, req.body?.usePoints === true);

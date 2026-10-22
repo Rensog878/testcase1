@@ -151,8 +151,8 @@ export default function StorePopups() {
         <WelcomeCelebration />
         <CallFab />
         <HelpFab />
-        <GuestContactPrompt t={t} />
-        <LocationPrompt />
+        {/* <GuestContactPrompt t={t} /> */}
+        {/* <LocationPrompt /> */}
       </div>
     </StoreContext.Provider>
   )

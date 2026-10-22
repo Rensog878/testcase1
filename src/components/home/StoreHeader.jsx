@@ -134,9 +134,11 @@ export default function StoreHeader() {
             <span>{current.pill}</span>
           </button>
 
+          {user ? (
           <a href="#account" className="sb-store-action" data-account-open onClick={showAccount} aria-label={user ? 'My account' : 'Sign in'}>
             <i className={user ? 'fa-solid fa-circle-check sb-store-signed-in' : 'fa-regular fa-circle-user'} aria-hidden="true"></i>
           </a>
+        ) : null}
 
           <a href="#basket" className="sb-store-action" data-checkout-open onClick={openBasket} aria-label={count ? `Basket, ${count} items` : 'Basket'}>
             <i className="fa-solid fa-bag-shopping" aria-hidden="true"></i>

@@ -364,6 +364,7 @@ export default function MobileBottomNav() {
       <aside ref={sheetRef} className={`mobile-menu-sheet ${isMenuOpen ? 'is-shown' : ''}`} aria-label="Menu" aria-hidden={!isMenuOpen}>
         <div className="mms-handle" aria-hidden="true"></div>
 
+        {user ? (
         <div className="mms-account">
           <div className="mms-avatar"><i className="fa-solid fa-user" aria-hidden="true"></i></div>
           <div className="mms-account-text">
@@ -374,6 +375,7 @@ export default function MobileBottomNav() {
             {user ? 'My Account' : 'Sign In'}
           </button>
         </div>
+        ) : null}
 
         {/* Only what the bottom bar (Home, Shop, AI Doctor, Blogs) and the
             header cart do not already reach. */}

@@ -366,11 +366,7 @@ export function CheckoutProvider({ enabled, children }) {
 
     // Checkout, on the basket step (and "Proceed to checkout" on a product page).
     const startCheckout = () => {
-      if (!live.current.user || !hasToken()) {
-        if (!live.current.step) showStep('basket')
-        requireSignIn()
-        return
-      }
+      // Guest checkout allowed for verification without forcing login
       if (!cartRef.current.length) {
         showToast('Your basket is empty. Add products from the catalog first.', 'warning')
         return

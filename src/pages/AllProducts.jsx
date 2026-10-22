@@ -630,9 +630,11 @@ export default function AllProducts() {
               <Search size={20} />
             </button>
 
+            {user ? (
             <Link to="/#login" className="mobile-header-icon-btn" aria-label="Account">
               <User size={20} />
             </Link>
+            ) : null}
 
             <a href="#basket" className="mobile-header-icon-btn mobile-cart-icon-btn" data-checkout-open onClick={openBasket} aria-label="Cart">
               <ShoppingCart size={20} />
