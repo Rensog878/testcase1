@@ -79,7 +79,7 @@ function writeSession(key, value) {
 
 // mode: 'auto' (pick the latest saved address once they load), 'saved',
 // 'edit' (a saved address open in the form) or 'new'.
-const newDraft = user => ({ userId: user?.id || '', mode: 'auto', addressId: '', saveAddress: true, payment: 'cod', usePoints: false, fields: initialFields(user) })
+const newDraft = user => ({ userId: user?.id || '', mode: user ? 'auto' : 'new', addressId: '', saveAddress: Boolean(user), payment: 'cod', usePoints: false, fields: initialFields(user) })
 function readDraft(user) {
   const saved = readSession(DRAFT_KEY)
   if (!saved?.fields || saved.userId !== (user?.id || '')) return newDraft(user)
@@ -123,7 +123,7 @@ export function CheckoutProvider({ enabled, children }) {
   const [modals, modal] = useModalStates()
   const [authNotice, setAuthNotice] = useState('')
   const [loginRequest, setLoginRequest] = useState(0)
-  const [addresses, setAddressesState] = useState(null) // null until loaded
+  const [addresses, setAddressesState] = useState(() => (user ? null : [])) // null until loaded for signed-in; empty array for guests
   const [draft, setDraftState] = useState(() => readDraft(user))
   const [errors, setErrors] = useState({})
   const [busy, setBusyState] = useState('') // '' | save | cod | pay | verify
@@ -479,7 +479,7 @@ export function CheckoutProvider({ enabled, children }) {
         focusField(bad[0])
         return
       }
-      if (d.mode !== 'saved' && d.saveAddress) {
+      if (live.current.user && d.mode !== 'saved' && d.saveAddress) {
         setBusy('save')
         try {
           const { addressDetails } = customerDetails(d.fields)
@@ -697,7 +697,7 @@ export function CheckoutProvider({ enabled, children }) {
     try { redirectMsg = sessionStorage.getItem('sathya_auth_redirect_msg') } catch {}
     if ((hash === 'login' || hash === 'auth' || redirectMsg) && !live.current.user) {
       try { sessionStorage.removeItem('sathya_auth_redirect_msg') } catch {}
-      afterPageTransition().then(() => actions.openSignIn(redirectMsg || LINK_LOGIN_MSG))
+      if (!live.current.step) afterPageTransition().then(() => actions.openSignIn(redirectMsg || LINK_LOGIN_MSG))
     } else if (hash === 'account') {
       afterPageTransition().then(() => actions.openAccount())
     }
@@ -741,12 +741,7 @@ export function CheckoutProvider({ enabled, children }) {
       return
     }
     if (step === 'basket') return
-    // Signed out (or the session expired): the basket, with the sign-in card.
-    if (!user) {
-      actions.showStep('basket', { replace: true })
-      actions.requireSignIn()
-      return
-    }
+    // Guest checkout enabled for verification: no sign-in required
     if (!cartReady) return
     if (!cart.length) actions.showStep('basket', { replace: true })
     else if (step === 'payment' && !detailsReady) actions.showStep('address', { replace: true })

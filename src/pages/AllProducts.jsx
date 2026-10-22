@@ -231,6 +231,8 @@ export default function AllProducts() {
       originalPrice: sizeObj?.originalPrice || product.originalPrice,
       selectedPack: currentSize,
       image: product.image,
+      gstRate: product.gstRate,
+      hsnCode: product.hsnCode,
     })
     showToast(`Added ${product.name.slice(0, 24)}... (${currentSize}) to Basket! 🛒`)
   }

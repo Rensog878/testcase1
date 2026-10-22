@@ -177,6 +177,7 @@ function BasketStep({ cart, cartReady, actions }) {
             <div className="cart-item-meta">
               {item.selectedPack && <span className="cart-item-pack">{item.selectedPack}</span>}
               {item.hsnCode && <span className="badge badge-blue" style={{ fontSize: '0.7rem', padding: '1px 6px' }}>HSN: {item.hsnCode}</span>}
+              {item.gstRate !== undefined && item.gstRate !== null && <span className="badge badge-green" style={{ fontSize: '0.7rem', padding: '1px 6px', background: '#dcfce7', color: '#15803d', borderRadius: '4px' }}>GST: {item.gstRate}%</span>}
               <span>{rupees(item.price)} each</span>
             </div>
             <div className="cart-item-foot">
@@ -305,10 +306,12 @@ function AddressForm({ fields, errors, saveAddress, busy, actions, field }) {
           <FieldError id="co-state" problem={errors.state} />
         </div>
       </div>
+      {saveAddress !== false && (
       <label className="co-check">
         <input type="checkbox" checked={saveAddress} disabled={busy} onChange={event => actions.setSaveAddress(event.target.checked)} />
         <span>Save this address for future orders</span>
       </label>
+      )}
     </div>
   )
 }
@@ -320,16 +323,17 @@ function AddressStep({ checkout, actions }) {
   const field = (name, label, props = {}) => (
     <Field name={name} label={label} value={fields[name]} problem={errors[name]} onChange={actions.setField} disabled={busy} {...props} />
   )
+  const isGuest = !checkout.user
   const selectedId = draft.mode === 'saved' || draft.mode === 'edit' ? draft.addressId : ''
-  const formOpen = draft.mode === 'new' || draft.mode === 'edit' || (addresses !== null && !addresses.length)
+  const formOpen = !checkout.user || draft.mode === 'new' || draft.mode === 'edit' || (addresses !== null && !addresses.length)
 
   return (
     <>
       <section className="co-group" aria-labelledby="coAddressTitle">
         <h3 id="coAddressTitle" className="co-group-title">Deliver to</h3>
-        <p className="co-lead">Choose a saved address or add a new one.</p>
+        <p className="co-lead">{isGuest ? 'Enter your delivery address below:' : 'Choose a saved address or add a new one.'}</p>
         {formOpen && <p className="co-req-key"><RequiredMark /> <span>Required</span></p>}
-        {addresses === null ? (
+        {!isGuest && (addresses === null ? (
           <div className="co-cards">
             <span className="co-sr" role="status">Loading your addresses...</span>
             <div className="co-skeleton" aria-hidden="true"></div>
@@ -360,7 +364,7 @@ function AddressStep({ checkout, actions }) {
               <span className="co-card-body"><span className="co-card-title">Add a new address</span></span>
             </label>
           </div>
-        )}
+        ))}
         {draft.mode === 'saved' && selectedId && (
           <button type="button" className="co-link" disabled={busy} onClick={actions.editAddress}>
             <i className="fa-solid fa-pen" aria-hidden="true"></i> Edit address

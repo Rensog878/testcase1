@@ -106,6 +106,7 @@ export function withCurrentProducts(items, products) {
     const update = {}
     const rate = Number(product.gstRate)
     if (product.gstRate !== undefined && product.gstRate !== null && product.gstRate !== '' && Number.isFinite(rate) && rate !== Number(item.gstRate)) update.gstRate = rate
+    if (product.hsnCode !== undefined && product.hsnCode !== null && product.hsnCode !== item.hsnCode) update.hsnCode = product.hsnCode
     const pack = item.selectedPack
     const price = Number(product.packagePrices?.[pack])
     if (pack && price > 0 && price !== Number(item.price)) update.price = price

@@ -155,7 +155,7 @@ export default function Storefront() {
       const price = packPrice(product, selectedPack, basePack)
       const originalPrice = packMrp(product, selectedPack, price)
 
-      checkout.addItem({ ...product, price: Number(price), originalPrice: Number(originalPrice), selectedPack }, customQty)
+      checkout.addItem({ ...product, price: Number(price), originalPrice: Number(originalPrice), selectedPack, gstRate: product.gstRate, hsnCode: product.hsnCode }, customQty)
 
       showToast(`"${product.name}" added to basket!`, 'success')
         checkout.openBasket()

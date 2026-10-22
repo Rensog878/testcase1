@@ -1507,7 +1507,7 @@ async function priceCart(rawItems) {
 
     const rate = Number(product.gstRate);
     const gstRate = product.gstRate !== undefined && product.gstRate !== null && product.gstRate !== '' && Number.isFinite(rate) ? rate : GST_RATE * 100;
-    lines.push({ id: product.id, name: product.name, image: product.image || '', packSize: pack, selectedPack: pack, qty: r.qty, price, gstRate });
+    lines.push({ id: product.id, name: product.name, image: product.image || '', packSize: pack, selectedPack: pack, qty: r.qty, price, gstRate, hsnCode: product.hsnCode || '31010099' });
     unitsByProduct.set(product.id, (unitsByProduct.get(product.id) || 0) + r.qty);
   }
 
@@ -1567,9 +1567,11 @@ function readCustomerDetails(source) {
 // SAVED DELIVERY ADDRESSES (the signed-in user's own)
 // ============================================================
 
-app.get('/api/addresses', requireAuth(), async (req, res) => {
+app.get('/api/addresses', async (req, res) => {
+  const user = await getAuthenticatedUser(req);
+  if (!user) return res.json({ success: true, data: [] });
   try {
-    res.json({ success: true, data: await db.getAddresses(req.user.id) });
+    res.json({ success: true, data: await db.getAddresses(user.id) });
   } catch (err) {
     sendError(res, err, 'Addresses');
   }
@@ -2888,10 +2890,12 @@ app.get('/api/me/referrals', requireAuth(), async (req, res) => {
 
 // What checkout will charge after the welcome offer and points - the same
 // calculation /api/orders and /api/payments/create-order apply.
-app.post('/api/checkout/rewards', requireAuth(), async (req, res) => {
+app.post('/api/checkout/rewards', async (req, res) => {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return res.json({ success: true, data: { welcomeDiscount: 0, pointsDiscount: 0, discount: 0, balance: 0, subtotal: 0, gst: 0 } });
   try {
     const priced = await priceCart(req.body?.items);
-    const { rewards, balance } = await quoteRewards(req.user, priced, req.body?.usePoints === true);
+    const { rewards, balance } = await quoteRewards(user, priced, req.body?.usePoints === true);
     res.json({ success: true, data: { ...rewards, balance, subtotal: priced.subtotal, gst: priced.gst } });
   } catch (err) {
     sendError(res, err, 'Checkout rewards');

@@ -173,7 +173,7 @@ export default function ProductDetail() {
   const changeQuantity = delta => { setQuantity(q => Math.max(1, q + delta)); setCartAdded(false) }
 
   const addToCart = () => {
-    addItem({ ...product, id: product.id || product._id, price: selectedPrice, originalPrice: selectedOriginalPrice, selectedPack }, quantity)
+    addItem({ ...product, id: product.id || product._id, price: selectedPrice, originalPrice: selectedOriginalPrice, selectedPack, gstRate: product.gstRate, hsnCode: product.hsnCode }, quantity)
     setCartAdded(true)
   }
   const proceedToCheckout = () => {
